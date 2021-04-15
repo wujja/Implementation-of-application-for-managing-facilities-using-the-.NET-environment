@@ -1,0 +1,27 @@
+﻿<Window x:Class="Apkainz.Statistic"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Apkainz"
+        mc:Ignorable="d"
+        Title="Window1" Height="300" Width="500">
+    <StackPanel Margin="0, 90">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Percentage of reserved place:" Grid.Column="0" HorizontalAlignment="Center"/>
+            <Label x:Name="percentageReservedPlace" Grid.Column="1" HorizontalAlignment="Center"/>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Income:" Grid.Column="0" HorizontalAlignment="Center"/>
+            <Label x:Name="incomeValue" Grid.Column="1" HorizontalAlignment="Center"/>
+        </Grid>
+    </StackPanel>
+</Window>

@@ -1,0 +1,414 @@
+﻿<Controls:MetroWindow 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:rg="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
+        xmlns:local="clr-namespace:Apkainz"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"   
+        x:Class="Apkainz.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1000" MinHeight="630">
+
+    <Window.Resources >
+        <local:MyDataSource x:Key="Ods"/>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                        Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+    </Window.Resources>
+
+    <Grid Loaded="Grid_Loaded" Margin="0,60,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel  Grid.Column="0" Margin="20,0,20,0">
+
+            <Label HorizontalAlignment="Center" Content="Display data" FontSize="20" FontWeight="SemiBold" />
+
+            <Grid Margin="0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Label Content="Booking schedule"  Grid.Column="0" HorizontalAlignment="Right"/>
+                <Controls:ToggleSwitchButton  x:Name="changeDisplayReservation_ToggleSwitchButton" Grid.Column="1" OffSwitchBrush="LightSteelBlue" Click="changeDisplayReservation_ToggleSwitchButton_Click" Margin="27.6,0,27.2,0" VerticalAlignment="Top"/>
+                <Label Content="Tables"  Grid.Column="2" HorizontalAlignment='Left'/>
+                <ComboBox x:Name="whichTableToDisplay_ComboBox" IsEnabled="False" Margin="0,0,50,0" Grid.Column="3" HorizontalAlignment="Right" Width="136" SelectionChanged="whichTableToDisplay_ComboBox_SelectionChanged" >
+                    <ComboBoxItem Content="Places"/>
+                    <ComboBoxItem Content="Guests"/>
+                    <ComboBoxItem Content="Reservations"/>
+                    <ComboBoxItem Content="Payments"/>
+                </ComboBox>
+            </Grid>
+            <Grid Height="420">
+                <rg:ReoGridControl x:Name="reservation_ReoGridcontrol"  Grid.Column="0" Visibility="Visible"/>
+                <DataGrid x:Name="displayTable_DataGrid" Visibility="Hidden"/>
+            </Grid>
+            <Button x:Name="showStatistic" Margin="200,20" Content="Statistic" Click="Button_Click_1"/>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Margin="40,0,40,0" >
+
+            <Label HorizontalAlignment="Center" Content="Modify data" FontSize="20" FontWeight="SemiBold" />
+
+            <!--Choose operation-->
+            <StackPanel Margin="0,80,0,0">
+
+                <Grid Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="Which operation:" HorizontalAlignment="Left"  VerticalAlignment="Top" Grid.Column="0"/>
+                    <ComboBox x:Name="whichOperation_ComboBox"  SelectionChanged="WhichOperation_ComboBox_SelectionChanged" Grid.Column="1" >
+                        <ComboBoxItem Content="Add"/>
+                        <ComboBoxItem Content="Modify"/>
+                        <ComboBoxItem Content="Delete"/>
+                    </ComboBox>
+                </Grid>
+
+                <Grid Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="Which data set:" HorizontalAlignment="Left" VerticalAlignment="Top"  Grid.Column="0"/>
+                    <ComboBox x:Name="whichDataSet_ComboBox" SelectionChanged="WhichDataSet_ComboBox_SelectionChanged" IsEnabled="False" Grid.Column="1" >
+                        <ComboBoxItem Content="Place"/>
+                        <ComboBoxItem Content="Guest"/>
+                        <ComboBoxItem Content="Reservation"/>
+                        <ComboBoxItem Content="Payment"/>
+                    </ComboBox>
+                </Grid>
+
+                <Grid Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label x:Name="whichRecord_label" Content="Which record:" Visibility="Visible" HorizontalAlignment="Left"   Grid.Column="0"/>
+                    <ComboBox IsTextSearchEnabled="True" x:Name="whichRecord_comboBox" Visibility="Visible" IsEnabled="False" SelectionChanged="WhichRecord_comboBox_SelectionChanged" Grid.Column="1"/>
+                </Grid>
+
+            </StackPanel>
+
+            <!--Modify-->
+            <Grid Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+
+                <!--Modify Place-->
+                <StackPanel x:Name="addDataPlace" Visibility="Hidden" Grid.ColumnSpan="2" Margin="0,0,0.2,-0.6">
+
+                    <Grid  Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="placeDescription" Content="Description:" />
+                        <TextBox Grid.Column="1" x:Name="placeDescriptionValue"  MaxLength="45"
+                              Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                              Style="{StaticResource textBoxInError}" TextChanged="TextChangedEventHandler">
+                            <Binding Path="Value1" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:StringRule  MinValue="2"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" x:Name="typeOfPlaceDescription" Content="Type of place:"/>
+                        <ComboBox Grid.Column="1" Name="typeOfPlaceDescriptionValue" SelectionChanged="SelectionChangedEventHandler"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label x:Name="numberOfBedsLabel" Content="Number of beds:" Grid.Column="0"/>
+                        <Controls:NumericUpDown x:Name="numberOfBedsNumericUoDown" Minimum="1" Maximum="500"  Grid.Column="1" Value="1" ValueChanged="NumericValueChanged"/>
+                    </Grid>
+
+                </StackPanel>
+
+                <!--Modify Guest-->
+                <StackPanel x:Name="addDataGuest" Visibility="Hidden" Grid.ColumnSpan="2" Margin="0,0,0.2,-0.6">
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="guestFirstName" Content="First Name:"/>
+                        <TextBox Grid.Column="1" x:Name="guestFirstNameValue"
+                          MaxLength="45" Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                            Style="{StaticResource textBoxInError}" TextChanged="TextChangedEventHandler">
+                            <Binding Path="Value2" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:StringRule  MinValue="2"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="guestLastName" Content="Last Name:"/>
+                        <TextBox Grid.Column="1" x:Name="guestLastNameValue"
+                             MaxLength="45" Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                             Style="{StaticResource textBoxInError}" TextChanged="TextChangedEventHandler">
+                            <Binding Path="Value3" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:StringRule  MinValue="2"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="guestPhoneNumber" Content="Phone Number:"/>
+                        <TextBox Grid.Column="1" x:Name="guestPhoneNumberValue"
+                                MaxLength="45" Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                                Style="{StaticResource textBoxInError}" TextChanged="TextChangedEventHandler">
+                            <Binding Path="Value4" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:PhoneNumberRule  MinLength="2" MaxLength="9"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="guestAdress" Content="Adress:"/>
+                        <TextBox Grid.Column="1" x:Name="guestAdressValue" MaxLength="45"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="4" Grid.Column="0" x:Name="guestEmail" Content="Email:"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="guestEmailValue" MaxLength="45" />
+                    </Grid>
+
+                </StackPanel>
+
+                <!--Modify Reservation-->
+                <StackPanel x:Name="addDataReservation" Visibility="Hidden" Grid.ColumnSpan="2" Margin="0,0,0.2,-0.6">
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="reservationGuest" Content="Guest:"/>
+                        <ComboBox Grid.Column="1" x:Name="reservationGuestValue" SelectionChanged="SelectionChangedEventHandler"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="reservationDateFrom" Content="Date from:"/>
+                        <DatePicker Grid.Column="1" x:Name="reservationDateFromValue" SelectedDateChanged="SelectedDateChanged" />
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="reservationDateTo" Content="Date to:"/>
+                        <DatePicker Grid.Column="1" x:Name="reservationDateToValue" SelectedDateChanged="SelectedDateChanged"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="reservationPlace" Content="Place:"/>
+                        <ComboBox Grid.Column="1" x:Name="reservationPlaceValue" SelectionChanged="SelectionChangedEventHandler"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="reservationPriceForDay" Content="Price for day:"/>
+                        <TextBox Grid.Column="1" x:Name="reservationPriceForDayValue"
+                             MaxLength="45" Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                             Style="{StaticResource textBoxInError}" TextChanged="TextChangedEventHandler">
+                            <Binding Path="Value6" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:DecimalRule  MinLength="1" MaxLength="10" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label x:Name="numberOfAdults" Content="Number of adults:" Grid.Column="0"/>
+                        <Controls:NumericUpDown x:Name="numberOfAdultsNumericUpDown" Minimum="0" Maximum="500" Value="1"  Grid.Column="1" ValueChanged="NumericValueChanged"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label x:Name="numberOfChildrenLabel" Content="Number of children:" Grid.Column="0"/>
+                        <Controls:NumericUpDown x:Name="numberOfChildrenNumericUpDown" Minimum="0" Maximum="500" Value="0"  Grid.Column="1" ValueChanged="NumericValueChanged"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="reservationDescription" Grid.Column="0" Content="Description" />
+                        <TextBox x:Name="reservationDescriptionValue" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+
+                <!--Modify Payment-->
+                <StackPanel x:Name="addDataPayment" Visibility="Visible" Grid.ColumnSpan="2">
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentWhichReservation" Content="Reservation:"/>
+                        <ComboBox Grid.Column="1" x:Name="paymentWhichReservationValue" SelectionChanged="PaymentWhichReservationValue_SelectionChanged" />
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentDate" Content="Date:"/>
+                        <DatePicker Grid.Column="1" x:Name="paymentDateValue" SelectedDateChanged="SelectedDateChanged"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentValue" Content="Value:"/>
+                        <TextBox Grid.Column="1" x:Name="paymentValueValue"
+                             MaxLength="45" Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                             Style="{StaticResource textBoxInError}" TextChanged="PaymentValueValue_TextChanged">
+                            <Binding Path="Value7" Source="{StaticResource Ods}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:DecimalRule MinLength="1" MaxLength="10"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentHowMuchMoneyIsMissing" Content="Left to pay:"/>
+                        <Label Grid.Column="1" x:Name="paymentHowMuchMoneyIsMissingValue"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentPrepayment" Content="Prepayment:"/>
+                        <CheckBox Grid.Column="1" x:Name="paymentPrepaymentValue" Checked="PaymentPrepaymentValue_Checked" HorizontalAlignment="Center"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" x:Name="paymentWholePayment" Content="Whole payment:"/>
+                        <CheckBox Grid.Column="1" x:Name="paymentWholePaymentValue" Checked="PaymentWholePaymentValue_Checked" HorizontalAlignment="Center"/>
+                    </Grid>
+
+                </StackPanel>
+            </Grid>
+
+            <Button x:Name="executeModify_button" Content="execute" HorizontalAlignment="Center"   Click="ExecuteModify_button_Click" IsEnabled="False" Height="40" Grid.IsSharedSizeScope="True" FontSize="20"/>
+
+        </StackPanel>
+    </Grid>
+
+</Controls:MetroWindow>
